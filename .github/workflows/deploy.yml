@@ -22,14 +22,14 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Recomendado para Astro
-          cache: 'pnpm'
+          node-version: "20" # Recomendado para Astro
+          cache: "pnpm"
 
       - name: Instalar dependencias
         run: pnpm install
 
       - name: Construir el proyecto (Astro build)
-        run: pnpm run build-con-error-intencional
+        run: pnpm run build
 
       - name: Configurar credenciales de AWS
         uses: aws-actions/configure-aws-credentials@v4
@@ -43,7 +43,7 @@ jobs:
         run: |
           aws s3 sync ./dist/ s3://${{ vars.AWS_S3_BUCKET }} --delete
 
-      # Opcional: Si ya tienes CloudFront configurado, descomenta el siguiente bloque 
+      # Opcional: Si ya tienes CloudFront configurado, descomenta el siguiente bloque
       # para invalidar la caché después de cada despliegue.
       # - name: Invalidar caché de CloudFront
       #   run: |
