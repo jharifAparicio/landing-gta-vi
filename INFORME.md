@@ -22,6 +22,8 @@ GSAP (GreenSock): Una librería robusta para incorporar animaciones fluidas y av
 
 ### 1.3. El historial de ejecuciones en la pestaña Actions (al menos un éxito y un fallo intencional corregido).
 
+![historial de ejecucion en actions](images/history.png)
+
 ### 1.4. El sitio web funcionando accesible públicamente (URL de S3 y CloudFront).
 
     http://gta-vi-landing.s3-website-us-east-1.amazonaws.com/
