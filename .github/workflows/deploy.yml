@@ -1,0 +1,50 @@
+name: Deploy Astro to AWS S3
+
+on:
+  push:
+    branches:
+      - main # Cambia a 'master' si tu rama principal se llama así
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # Instalamos pnpm ya que en tu proyecto vi un pnpm-lock.yaml
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9 # Se instalará la última versión estable de pnpm
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Recomendado para Astro
+          cache: 'pnpm'
+
+      - name: Instalar dependencias
+        run: pnpm install
+
+      - name: Construir el proyecto (Astro build)
+        run: pnpm run build
+
+      - name: Configurar credenciales de AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }} # Asegúrate de tener esta variable, ej: us-east-1
+
+      - name: Sincronizar archivos a Amazon S3
+        # Astro genera los archivos estáticos en la carpeta "dist" por defecto
+        run: |
+          aws s3 sync ./dist/ s3://${{ vars.AWS_S3_BUCKET }} --delete
+
+      # Opcional: Si ya tienes CloudFront configurado, descomenta el siguiente bloque 
+      # para invalidar la caché después de cada despliegue.
+      # - name: Invalidar caché de CloudFront
+      #   run: |
+      #     aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_ID }} --paths "/*"
